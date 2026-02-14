@@ -1,4 +1,4 @@
-import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client@1.0.0/+esm";
+import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client@1.6.0/dist/index.min.js";
 
 const CONFIG = {
     HF_SPACE_URL: "https://texmexdex-vote.hf.space",
