@@ -33,8 +33,9 @@ function updateStatus(message, state) {
 // Load designs and vote counts from backend
 async function loadDesigns() {
     try {
-        const result = await gradioClient.predict("/get_designs", {});
-        designs = result.data;
+        const result = await gradioClient.predict("/get_designs");
+        // Gradio returns data in result.data array, first element is our response
+        designs = Array.isArray(result.data) ? result.data[0] : result.data;
         renderGallery();
     } catch (error) {
         showError(`Failed to load designs: ${error.message}`);
@@ -70,15 +71,18 @@ window.handleVote = async function(designId) {
     try {
         const result = await gradioClient.predict("/submit_vote", {
             design_id: designId,
-            previous_vote: currentVote
+            previous_vote: currentVote || ""
         });
         
-        if (result.data.success) {
+        // Gradio returns data in result.data array, first element is our response
+        const response = Array.isArray(result.data) ? result.data[0] : result.data;
+        
+        if (response.success) {
             localStorage.setItem(CONFIG.STORAGE_KEY, designId);
-            designs = result.data.designs;
+            designs = response.designs;
             renderGallery();
         } else {
-            showError(result.data.message || "Vote failed");
+            showError(response.message || "Vote failed");
         }
     } catch (error) {
         showError(`Failed to submit vote: ${error.message}`);
