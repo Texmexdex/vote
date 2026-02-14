@@ -46,6 +46,7 @@ main {
     align-items: center;
     justify-content: center;
     padding: 2rem;
+    padding-bottom: 6rem;
     position: relative;
     z-index: 2;
 }
@@ -388,6 +389,7 @@ main {
 @media (max-width: 768px) {
     main {
         padding: 2rem 1rem;
+        padding-bottom: 6rem;
     }
     
     .gallery {
@@ -415,6 +417,10 @@ main {
     .footer-content {
         flex-direction: column;
         text-align: center;
+    }
+    
+    footer {
+        padding: 1rem;
     }
 }
 
@@ -720,11 +726,15 @@ main {
 
 /* Footer */
 footer {
-    position: relative;
-    z-index: 3;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
     padding: 1.5rem 2rem;
     border-top: 2px solid var(--color-border);
     background: var(--color-surface);
+    backdrop-filter: blur(10px);
 }
 
 .footer-content {
