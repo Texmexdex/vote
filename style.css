@@ -110,9 +110,8 @@ main {
 }
 
 .gallery-item.voted:not(.current-vote) {
-    opacity: 0.3;
-    filter: grayscale(1);
-    pointer-events: none;
+    opacity: 1;
+    filter: none;
 }
 
 /* Image container */
@@ -231,6 +230,11 @@ main {
     transition: all 0.3s var(--ease-out-expo);
 }
 
+.vote-button.cancel {
+    color: #ff0055;
+    border-color: #ff0055;
+}
+
 .vote-button::before {
     content: '';
     position: absolute;
@@ -241,6 +245,10 @@ main {
     background: var(--color-accent);
     transition: left 0.4s var(--ease-out-expo);
     z-index: -1;
+}
+
+.vote-button.cancel::before {
+    background: #ff0055;
 }
 
 .vote-button:hover:not(:disabled) {

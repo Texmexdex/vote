@@ -38,7 +38,7 @@ function renderGallery() {
     const currentVote = localStorage.getItem(CONFIG.STORAGE_KEY);
     
     gallery.innerHTML = designs.map((design, index) => `
-        <div class="gallery-item ${currentVote ? 'voted' : ''} ${currentVote === design.id ? 'current-vote' : ''}" 
+        <div class="gallery-item ${currentVote === design.id ? 'current-vote' : ''}" 
              data-id="${design.id}" 
              style="--item-index: ${index}">
             <div class="image-container" onclick="openModal('${design.id}')">
@@ -48,8 +48,9 @@ function renderGallery() {
                 <span class="design-name">${design.name}</span>
                 <span class="vote-count">${design.votes}</span>
             </div>
-            <button class="vote-button" onclick="handleVote('${design.id}')" ${currentVote && currentVote !== design.id ? 'disabled' : ''}>
-                ${currentVote === design.id ? 'Change Vote' : 'Vote'}
+            <button class="vote-button ${currentVote === design.id ? 'cancel' : ''}" 
+                    onclick="handleVote('${design.id}')">
+                ${currentVote === design.id ? 'Cancel Vote' : 'Vote'}
             </button>
         </div>
     `).join('');
@@ -102,13 +103,37 @@ document.addEventListener('DOMContentLoaded', () => {
 window.handleVote = async function(designId) {
     const currentVote = localStorage.getItem(CONFIG.STORAGE_KEY);
     
+    // If clicking on current vote, cancel it
+    if (currentVote === designId) {
+        try {
+            const result = await gradioClient.predict("/submit_vote", {
+                design_id: "",
+                previous_vote: currentVote
+            });
+            
+            const response = Array.isArray(result.data) ? result.data[0] : result.data;
+            
+            if (response.success) {
+                localStorage.removeItem(CONFIG.STORAGE_KEY);
+                designs = response.designs;
+                renderGallery();
+            } else {
+                showError(response.message || "Failed to cancel vote");
+            }
+        } catch (error) {
+            showError(`Failed to cancel vote: ${error.message}`);
+            throw error;
+        }
+        return;
+    }
+    
+    // Otherwise, submit new vote
     try {
         const result = await gradioClient.predict("/submit_vote", {
             design_id: designId,
             previous_vote: currentVote || ""
         });
         
-        // Gradio returns data in result.data array, first element is our response
         const response = Array.isArray(result.data) ? result.data[0] : result.data;
         
         if (response.success) {
