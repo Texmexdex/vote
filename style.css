@@ -385,18 +385,6 @@ main {
 
 /* Responsive */
 @media (max-width: 768px) {
-    .hero {
-        padding: 3rem 1rem 1rem;
-    }
-    
-    .hero-title {
-        font-size: clamp(3rem, 20vw, 6rem);
-    }
-    
-    .hero-subtitle {
-        font-size: 0.875rem;
-    }
-    
     main {
         padding: 2rem 1rem;
     }
