@@ -6,7 +6,6 @@
 
 :root {
     --color-bg: #0a0a0a;
-    --color-bg-gradient: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
     --color-surface: #1a1a1a;
     --color-surface-elevated: #222222;
     --color-border: #2a2a2a;
@@ -15,42 +14,106 @@
     --color-text-muted: #a0a0a0;
     --color-accent: #6366f1;
     --color-accent-hover: #4f46e5;
-    --color-accent-glow: rgba(99, 102, 241, 0.3);
+    --color-accent-glow: rgba(99, 102, 241, 0.4);
     --color-success: #10b981;
     --color-error: #ef4444;
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
-    --shadow-glow: 0 0 20px var(--color-accent-glow);
-    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow-glow: 0 0 30px var(--color-accent-glow);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
     background: var(--color-bg);
-    background-image: 
-        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.05) 0px, transparent 50%);
-    background-attachment: fixed;
     color: var(--color-text);
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    position: relative;
 }
 
+/* Animated gradient background */
 body::before {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
+    animation: gradientShift 15s ease infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes gradientShift {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1) rotate(5deg);
+    }
+}
+
+/* Floating particles */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.1), transparent),
+        radial-gradient(2px 2px at 60% 70%, rgba(255, 255, 255, 0.1), transparent),
+        radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.1), transparent),
+        radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.1), transparent),
+        radial-gradient(2px 2px at 90% 60%, rgba(255, 255, 255, 0.1), transparent),
+        radial-gradient(1px 1px at 33% 80%, rgba(255, 255, 255, 0.1), transparent);
+    background-size: 200% 200%;
+    animation: particleFloat 20s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes particleFloat {
+    0%, 100% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+}
+
+/* Top accent line */
+.top-accent {
+    position: fixed;
+    top: 0;
+    left: 0;
     right: 0;
-    height: 1px;
+    height: 2px;
     background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
-    opacity: 0.5;
-    z-index: 1000;
+    z-index: 1001;
+    animation: accentPulse 3s ease-in-out infinite;
+}
+
+@keyframes accentPulse {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 
 header {
@@ -79,27 +142,39 @@ header {
 }
 
 h1 {
-    font-size: 1.75rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
     color: var(--color-text);
-    background: linear-gradient(135deg, var(--color-text) 0%, var(--color-text-muted) 100%);
+    background: linear-gradient(135deg, #ffffff 0%, var(--color-accent) 50%, #8b5cf6 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    background-size: 200% auto;
+    animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+    0%, 100% {
+        background-position: 0% center;
+    }
+    50% {
+        background-position: 100% center;
+    }
 }
 
 .status {
     font-size: 0.875rem;
     color: var(--color-text-muted);
-    padding: 0.5rem 1rem;
+    padding: 0.625rem 1.25rem;
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: 10px;
     transition: var(--transition-smooth);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.625rem;
     background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
 }
 
 .status::before {
@@ -114,7 +189,20 @@ h1 {
 
 .status.connecting::before {
     background: #f59e0b;
-    animation: pulse 1.5s ease-in-out infinite;
+    animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 8px #f59e0b;
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(0.8);
+        box-shadow: 0 0 16px #f59e0b;
+    }
 }
 
 .status.connected {
@@ -125,6 +213,7 @@ h1 {
 
 .status.connected::before {
     background: var(--color-success);
+    box-shadow: 0 0 12px var(--color-success);
 }
 
 .status.error {
@@ -135,17 +224,7 @@ h1 {
 
 .status.error::before {
     background: var(--color-error);
-}
-
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.5;
-        transform: scale(0.9);
-    }
+    box-shadow: 0 0 12px var(--color-error);
 }
 
 main {
@@ -153,6 +232,10 @@ main {
     max-width: 1400px;
     margin: 0 auto;
     animation: fadeIn 0.6s ease-out 0.2s both;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 120px);
 }
 
 @keyframes fadeIn {
@@ -168,20 +251,25 @@ main {
 
 .gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
+    gap: 3rem;
+    width: 100%;
+    max-width: 1200px;
+    justify-items: center;
 }
 
 .gallery-item {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 16px;
+    border-radius: 20px;
     overflow: hidden;
     transition: var(--transition-smooth);
     animation: scaleIn 0.4s ease-out both;
-    animation-delay: calc(var(--item-index) * 0.05s);
+    animation-delay: calc(var(--item-index) * 0.1s);
     box-shadow: var(--shadow-md);
     position: relative;
+    width: 100%;
+    max-width: 550px;
 }
 
 .gallery-item::before {
@@ -191,32 +279,54 @@ main {
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: 16px;
-    padding: 1px;
-    background: linear-gradient(135deg, transparent, var(--color-accent-glow), transparent);
+    border-radius: 20px;
+    padding: 2px;
+    background: linear-gradient(135deg, 
+        transparent 0%, 
+        var(--color-accent-glow) 25%, 
+        transparent 50%,
+        var(--color-accent-glow) 75%,
+        transparent 100%);
+    background-size: 200% 200%;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     opacity: 0;
     transition: var(--transition-smooth);
     pointer-events: none;
+    animation: borderFlow 3s linear infinite;
+}
+
+@keyframes borderFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 @keyframes scaleIn {
     from {
         opacity: 0;
-        transform: scale(0.95);
+        transform: scale(0.9) translateY(30px);
     }
     to {
         opacity: 1;
-        transform: scale(1);
+        transform: scale(1) translateY(0);
     }
 }
 
 .gallery-item:hover:not(.voted) {
     border-color: var(--color-accent);
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-xl), var(--shadow-glow);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        var(--shadow-xl), 
+        var(--shadow-glow),
+        0 0 60px rgba(99, 102, 241, 0.2);
 }
 
 .gallery-item:hover:not(.voted)::before {
@@ -225,11 +335,31 @@ main {
 
 .gallery-item.voted:not(.current-vote) {
     opacity: 0.4;
+    filter: grayscale(0.5);
 }
 
 .gallery-item.current-vote {
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2), var(--shadow-lg);
+    box-shadow: 
+        0 0 0 3px rgba(99, 102, 241, 0.3), 
+        var(--shadow-lg),
+        0 0 40px rgba(99, 102, 241, 0.3);
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 
+            0 0 0 3px rgba(99, 102, 241, 0.3), 
+            var(--shadow-lg),
+            0 0 40px rgba(99, 102, 241, 0.3);
+    }
+    50% {
+        box-shadow: 
+            0 0 0 3px rgba(99, 102, 241, 0.5), 
+            var(--shadow-lg),
+            0 0 60px rgba(99, 102, 241, 0.5);
+    }
 }
 
 .gallery-item.current-vote::before {
@@ -245,21 +375,38 @@ main {
     cursor: pointer;
 }
 
+/* Hover zoom effect for desktop */
+@media (hover: hover) and (pointer: fine) {
+    .image-container {
+        perspective: 1000px;
+    }
+    
+    .gallery-item img {
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    .image-container:hover img {
+        transform: scale(1.15);
+        filter: brightness(1.1);
+    }
+}
+
 .image-container::after {
-    content: '🔍 View full size';
+    content: '🔍 Click for full size';
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 1rem;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    padding: 1.25rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.7) 50%, transparent);
     color: white;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     text-align: center;
     opacity: 0;
     transition: var(--transition-smooth);
     pointer-events: none;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
 }
 
 .image-container:hover::after {
@@ -273,11 +420,6 @@ main {
     display: block;
     transition: var(--transition-smooth);
     filter: brightness(0.95);
-}
-
-.image-container:hover img {
-    transform: scale(1.03);
-    filter: brightness(1);
 }
 
 .vote-bar {
@@ -314,20 +456,20 @@ main {
 
 .vote-button {
     width: 100%;
-    padding: 1rem 1.5rem;
+    padding: 1.25rem 1.5rem;
     background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
     color: white;
     border: none;
     font-family: inherit;
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: 0.9375rem;
+    font-weight: 700;
     cursor: pointer;
     transition: var(--transition-smooth);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 }
 
 .vote-button::before {
@@ -338,20 +480,38 @@ main {
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.4);
     transform: translate(-50%, -50%);
     transition: width 0.6s, height 0.6s;
 }
 
+.vote-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
 .vote-button:hover:not(:disabled)::before {
-    width: 300px;
-    height: 300px;
+    width: 400px;
+    height: 400px;
+}
+
+.vote-button:hover:not(:disabled)::after {
+    left: 100%;
 }
 
 .vote-button:hover:not(:disabled) {
-    background: linear-gradient(135deg, var(--color-accent-hover) 0%, var(--color-accent) 100%);
+    background: linear-gradient(135deg, var(--color-accent-hover) 0%, #3730a3 100%);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5), var(--shadow-glow);
+    box-shadow: 
+        0 8px 25px rgba(99, 102, 241, 0.6), 
+        var(--shadow-glow),
+        0 0 40px rgba(99, 102, 241, 0.3);
 }
 
 .vote-button:active:not(:disabled) {
@@ -483,19 +643,23 @@ main {
 
 @media (max-width: 1024px) {
     .gallery {
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr));
+        gap: 2rem;
     }
     
     main {
         padding: 2rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
     }
 }
 
 @media (max-width: 768px) {
     .gallery {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
+        gap: 2rem;
     }
     
     header {
@@ -511,6 +675,11 @@ main {
     
     main {
         padding: 2rem 1rem;
+        min-height: auto;
+    }
+    
+    .gallery-item {
+        max-width: 100%;
     }
     
     .modal-close {
@@ -520,5 +689,33 @@ main {
     
     .modal-info {
         bottom: 1rem;
+    }
+    
+    /* Disable hover zoom on mobile */
+    .image-container:hover img {
+        transform: none;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 1.25rem;
+    }
+    
+    .status {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.875rem;
+    }
+    
+    main {
+        padding: 1.5rem 0.75rem;
+    }
+    
+    .gallery {
+        gap: 1.5rem;
     }
 }
