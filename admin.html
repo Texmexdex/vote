@@ -337,6 +337,20 @@
             color: var(--color-text-muted);
         }
         
+        .edit-design-card {
+            background: var(--color-bg);
+            border: 2px solid var(--color-border);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .edit-design-card h4 {
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            font-size: 1rem;
+        }
+        
         .image-preview {
             max-width: 300px;
             border: 2px solid var(--color-border);
@@ -454,39 +468,25 @@
             <h2>Manage Designs</h2>
             <div class="design-preview" id="designPreview"></div>
             
-            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--color-accent);">Update Design 1</h3>
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--color-accent);">Add New Design</h3>
             <div class="form-group">
-                <label>Design 1 Name</label>
-                <input type="text" id="design1Name" placeholder="Design 1">
+                <label>Design Name</label>
+                <input type="text" id="newDesignName" placeholder="My Design">
             </div>
             <div class="form-group">
-                <label>Design 1 Image</label>
+                <label>Design Image</label>
                 <div style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
-                    <input type="url" id="design1Url" placeholder="https://..." style="flex: 1; min-width: 200px;">
-                    <input type="file" id="design1File" accept="image/*" style="display: none;">
-                    <button onclick="document.getElementById('design1File').click()" type="button">Upload Image</button>
+                    <input type="url" id="newDesignUrl" placeholder="https://..." style="flex: 1; min-width: 200px;">
+                    <input type="file" id="newDesignFile" accept="image/*" style="display: none;">
+                    <button onclick="document.getElementById('newDesignFile').click()" type="button">Upload Image</button>
                 </div>
-                <div id="design1Preview" style="margin-top: 1rem;"></div>
+                <div id="newDesignPreview" style="margin-top: 1rem;"></div>
             </div>
+            <button onclick="addDesign()">Add Design</button>
             
-            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--color-accent);">Update Design 2</h3>
-            <div class="form-group">
-                <label>Design 2 Name</label>
-                <input type="text" id="design2Name" placeholder="Design 2">
-            </div>
-            <div class="form-group">
-                <label>Design 2 Image</label>
-                <div style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
-                    <input type="url" id="design2Url" placeholder="https://..." style="flex: 1; min-width: 200px;">
-                    <input type="file" id="design2File" accept="image/*" style="display: none;">
-                    <button onclick="document.getElementById('design2File').click()" type="button">Upload Image</button>
-                </div>
-                <div id="design2Preview" style="margin-top: 1rem;"></div>
-            </div>
-            
-            <div class="button-group">
-                <button onclick="updateDesigns()">Update Designs</button>
-            </div>
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--color-accent);">Edit Existing Designs</h3>
+            <div id="editDesignsContainer"></div>
+        </div>
             
             <div style="margin-top: 2rem; padding: 1rem; border: 2px solid var(--color-border); background: rgba(0, 255, 136, 0.05);">
                 <h4 style="color: var(--color-accent); margin-bottom: 0.5rem;">📝 How to Update Images:</h4>
@@ -572,25 +572,14 @@
 
         // Setup file input handlers
         window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('design1File').addEventListener('change', (e) => {
+            document.getElementById('newDesignFile').addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (file) {
-                    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                    if (file.size > 10 * 1024 * 1024) {
                         showMessage('Image must be less than 10MB', 'error');
                         return;
                     }
-                    uploadToImgur(file, 'design1Preview', 'design1Url');
-                }
-            });
-            
-            document.getElementById('design2File').addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    if (file.size > 10 * 1024 * 1024) { // 10MB limit
-                        showMessage('Image must be less than 10MB', 'error');
-                        return;
-                    }
-                    uploadToImgur(file, 'design2Preview', 'design2Url');
+                    uploadToImgur(file, 'newDesignPreview', 'newDesignUrl');
                 }
             });
             
@@ -679,6 +668,134 @@
                     <p>${design.votes} votes</p>
                 </div>
             `).join('');
+            
+            // Update edit designs section
+            renderEditDesigns(data.designs);
+        }
+        
+        function renderEditDesigns(designs) {
+            const container = document.getElementById('editDesignsContainer');
+            container.innerHTML = designs.map(design => `
+                <div class="edit-design-card">
+                    <h4>${design.name} (${design.id})</h4>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="edit_name_${design.id}" value="${design.name}">
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <div style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
+                            <input type="url" id="edit_url_${design.id}" value="${design.image_url}" style="flex: 1; min-width: 200px;">
+                            <input type="file" id="edit_file_${design.id}" accept="image/*" style="display: none;">
+                            <button onclick="document.getElementById('edit_file_${design.id}').click()" type="button">Upload</button>
+                        </div>
+                        <div id="edit_preview_${design.id}" style="margin-top: 1rem;"></div>
+                    </div>
+                    <div class="button-group">
+                        <button onclick="updateSingleDesign('${design.id}')">Update</button>
+                        <button class="danger" onclick="removeDesign('${design.id}')">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Setup file upload handlers for each design
+            designs.forEach(design => {
+                const fileInput = document.getElementById(`edit_file_${design.id}`);
+                if (fileInput) {
+                    fileInput.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            if (file.size > 10 * 1024 * 1024) {
+                                showMessage('Image must be less than 10MB', 'error');
+                                return;
+                            }
+                            uploadToImgur(file, `edit_preview_${design.id}`, `edit_url_${design.id}`);
+                        }
+                    });
+                }
+            });
+        }
+        
+        window.addDesign = async function() {
+            const name = document.getElementById('newDesignName').value;
+            const url = document.getElementById('newDesignUrl').value;
+            
+            if (!name || !url) {
+                showMessage('Please provide both name and image URL', 'error');
+                return;
+            }
+            
+            try {
+                const client = await initClient();
+                const result = await client.predict("/add_design", {
+                    name: name,
+                    image_url: url
+                });
+                
+                const response = Array.isArray(result.data) ? result.data[0] : result.data;
+                
+                if (response.success) {
+                    showMessage(response.message);
+                    document.getElementById('newDesignName').value = '';
+                    document.getElementById('newDesignUrl').value = '';
+                    document.getElementById('newDesignPreview').innerHTML = '';
+                    updateDashboard({ designs: response.designs, total_votes: 0 });
+                    refreshResults();
+                } else {
+                    showMessage(response.message, 'error');
+                }
+            } catch (error) {
+                showMessage(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        window.updateSingleDesign = async function(designId) {
+            const name = document.getElementById(`edit_name_${designId}`).value;
+            const url = document.getElementById(`edit_url_${designId}`).value;
+            
+            try {
+                const client = await initClient();
+                const result = await client.predict("/update_design", {
+                    design_id: designId,
+                    name: name,
+                    image_url: url
+                });
+                
+                const response = Array.isArray(result.data) ? result.data[0] : result.data;
+                
+                if (response.success) {
+                    showMessage(response.message);
+                    refreshResults();
+                } else {
+                    showMessage(response.message, 'error');
+                }
+            } catch (error) {
+                showMessage(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        window.removeDesign = async function(designId) {
+            if (!confirm('Are you sure you want to remove this design? This will delete all votes for it.')) {
+                return;
+            }
+            
+            try {
+                const client = await initClient();
+                const result = await client.predict("/remove_design", {
+                    design_id: designId
+                });
+                
+                const response = Array.isArray(result.data) ? result.data[0] : result.data;
+                
+                if (response.success) {
+                    showMessage(response.message);
+                    refreshResults();
+                } else {
+                    showMessage(response.message, 'error');
+                }
+            } catch (error) {
+                showMessage(`Error: ${error.message}`, 'error');
+            }
         }
 
         function updateTimer() {
@@ -756,17 +873,7 @@
         }
 
         window.updateDesigns = async function() {
-            const design1Name = document.getElementById('design1Name').value;
-            const design1Url = document.getElementById('design1Url').value;
-            const design2Name = document.getElementById('design2Name').value;
-            const design2Url = document.getElementById('design2Url').value;
-            
-            if (!design1Name || !design1Url || !design2Name || !design2Url) {
-                showMessage('Please fill in all design fields', 'error');
-                return;
-            }
-            
-            showMessage('Note: Design updates require backend modification. Contact your developer.', 'error');
+            showMessage('Please use the individual update buttons for each design', 'error');
         }
 
         window.resetVotes = async function() {
