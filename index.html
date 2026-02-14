@@ -18,6 +18,17 @@
         </div>
     </main>
 
+    <!-- Image Zoom Modal -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <img id="modalImage" src="" alt="">
+            <div class="modal-info">
+                <span id="modalDesignName"></span> • <span id="modalVoteCount"></span> votes
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="script.js"></script>
 </body>
 </html>

@@ -48,10 +48,12 @@ function renderGallery() {
     const gallery = document.getElementById("gallery");
     const currentVote = localStorage.getItem(CONFIG.STORAGE_KEY);
     
-    gallery.innerHTML = designs.map(design => `
-        <div class="gallery-item ${currentVote ? 'voted' : ''} ${currentVote === design.id ? 'current-vote' : ''}" data-id="${design.id}">
-            <div class="image-container">
-                <img src="${design.image_url}" alt="${design.name}">
+    gallery.innerHTML = designs.map((design, index) => `
+        <div class="gallery-item ${currentVote ? 'voted' : ''} ${currentVote === design.id ? 'current-vote' : ''}" 
+             data-id="${design.id}" 
+             style="--item-index: ${index}">
+            <div class="image-container" onclick="openModal('${design.id}')">
+                <img src="${design.image_url}" alt="${design.name}" loading="lazy">
             </div>
             <div class="vote-bar">
                 <span class="design-name">${design.name}</span>
@@ -63,6 +65,49 @@ function renderGallery() {
         </div>
     `).join('');
 }
+
+// Open image zoom modal
+window.openModal = function(designId) {
+    const design = designs.find(d => d.id === designId);
+    if (!design) return;
+    
+    const modal = document.getElementById("imageModal");
+    const modalImage = document.getElementById("modalImage");
+    const modalDesignName = document.getElementById("modalDesignName");
+    const modalVoteCount = document.getElementById("modalVoteCount");
+    
+    modalImage.src = design.image_url;
+    modalImage.alt = design.name;
+    modalDesignName.textContent = design.name;
+    modalVoteCount.textContent = design.votes;
+    
+    modal.classList.add("active");
+    document.body.style.overflow = "hidden";
+}
+
+// Close image zoom modal
+window.closeModal = function() {
+    const modal = document.getElementById("imageModal");
+    modal.classList.remove("active");
+    document.body.style.overflow = "auto";
+}
+
+// Close modal on background click
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById("imageModal");
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+});
 
 // Handle vote submission
 window.handleVote = async function(designId) {
