@@ -6,26 +6,14 @@ from datetime import datetime
 designs_db = {
     "design_1": {
         "id": "design_1",
-        "name": "Classic Chili",
-        "image_url": "https://images.unsplash.com/photo-1583224964811-e9c0c9a6c0e3?w=800",
+        "name": "Design 1",
+        "image_url": "https://raw.githubusercontent.com/Texmexdex/vote/main/1s.png",
         "votes": 0
     },
     "design_2": {
         "id": "design_2",
-        "name": "Spicy Verde",
-        "image_url": "https://images.unsplash.com/photo-1574484284002-952d92456975?w=800",
-        "votes": 0
-    },
-    "design_3": {
-        "id": "design_3",
-        "name": "White Bean Chili",
-        "image_url": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=800",
-        "votes": 0
-    },
-    "design_4": {
-        "id": "design_4",
-        "name": "Texas Red",
-        "image_url": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=800",
+        "name": "Design 2",
+        "image_url": "https://raw.githubusercontent.com/Texmexdex/vote/main/2s.png",
         "votes": 0
     }
 }
