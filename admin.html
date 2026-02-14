@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Voting System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --color-bg: #0e0e0e;
+            --color-surface: #1c1c1c;
+            --color-accent: #00ff88;
+            --color-error: #ff0055;
+            --color-warning: #ffaa00;
+            --color-text: #ffffff;
+            --color-text-muted: #888888;
+            --color-border: #2a2a2a;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: var(--color-surface);
+            border-bottom: 2px solid var(--color-border);
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            color: var(--color-accent);
+        }
+        
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border: 2px solid;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+        }
+        
+        .status-badge.active {
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+        
+        .status-badge.closed {
+            border-color: var(--color-error);
+            color: var(--color-error);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .card {
+            background: var(--color-surface);
+            border: 2px solid var(--color-border);
+            padding: 2rem;
+        }
+        
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            color: var(--color-accent);
+        }
+        
+        .stat {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--color-text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .section {
+            background: var(--color-surface);
+            border: 2px solid var(--color-border);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            color: var(--color-accent);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+        }
+        
+        input[type="text"],
+        input[type="datetime-local"],
+        input[type="url"],
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            background: var(--color-bg);
+            border: 2px solid var(--color-border);
+            color: var(--color-text);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+        
+        button {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 2px solid var(--color-accent);
+            color: var(--color-accent);
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: var(--color-accent);
+            color: var(--color-bg);
+        }
+        
+        button.danger {
+            border-color: var(--color-error);
+            color: var(--color-error);
+        }
+        
+        button.danger:hover {
+            background: var(--color-error);
+            color: var(--color-bg);
+        }
+        
+        button.warning {
+            border-color: var(--color-warning);
+            color: var(--color-warning);
+        }
+        
+        button.warning:hover {
+            background: var(--color-warning);
+            color: var(--color-bg);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        .results-table th {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+            color: var(--color-accent);
+        }
+        
+        .results-table tr:hover {
+            background: rgba(0, 255, 136, 0.05);
+        }
+        
+        .winner-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--color-accent);
+            color: var(--color-bg);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 2px solid;
+            font-weight: 600;
+        }
+        
+        .message.success {
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+            background: rgba(0, 255, 136, 0.05);
+        }
+        
+        .message.error {
+            border-color: var(--color-error);
+            color: var(--color-error);
+            background: rgba(255, 0, 85, 0.05);
+        }
+        
+        .design-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .design-preview-item {
+            border: 2px solid var(--color-border);
+            padding: 1rem;
+        }
+        
+        .design-preview-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            background: var(--color-bg);
+            margin-bottom: 0.5rem;
+        }
+        
+        .design-preview-item h4 {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .design-preview-item p {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+        
+        .timer-display {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--color-accent);
+            margin: 1rem 0;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Admin Dashboard</h1>
+        <div class="status-badge" id="votingStatus">Loading...</div>
+    </div>
+
+    <div class="container">
+        <div id="messages"></div>
+
+        <!-- Stats Overview -->
+        <div class="grid">
+            <div class="card">
+                <h2>Total Votes</h2>
+                <div class="stat" id="totalVotes">0</div>
+                <div class="stat-label">Votes Cast</div>
+            </div>
+            <div class="card">
+                <h2>Current Leader</h2>
+                <div class="stat" id="leaderName">-</div>
+                <div class="stat-label" id="leaderVotes">0 votes</div>
+            </div>
+            <div class="card">
+                <h2>Time Remaining</h2>
+                <div class="timer-display" id="timeRemaining">-</div>
+                <div class="stat-label">Until voting closes</div>
+            </div>
+        </div>
+
+        <!-- Live Results -->
+        <div class="section">
+            <h2>Live Results</h2>
+            <button onclick="refreshResults()" style="margin-bottom: 1rem;">Refresh Results</button>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Design</th>
+                        <th>Votes</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTable">
+                    <tr><td colspan="4" style="text-align: center; color: var(--color-text-muted);">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Voting Control -->
+        <div class="section">
+            <h2>Voting Control</h2>
+            <div class="form-group">
+                <label>Voting Window</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label style="font-size: 0.75rem;">Start Time</label>
+                        <input type="datetime-local" id="startTime">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.75rem;">End Time</label>
+                        <input type="datetime-local" id="endTime">
+                    </div>
+                </div>
+            </div>
+            <div class="button-group">
+                <button onclick="setVotingWindow()">Set Voting Window</button>
+                <button class="warning" onclick="closeVoting()">Close Voting Now</button>
+                <button onclick="openVoting()">Reopen Voting</button>
+            </div>
+        </div>
+
+        <!-- Manage Designs -->
+        <div class="section">
+            <h2>Manage Designs</h2>
+            <div class="design-preview" id="designPreview"></div>
+            
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--color-accent);">Update Designs</h3>
+            <div class="form-group">
+                <label>Design 1 Name</label>
+                <input type="text" id="design1Name" placeholder="Design 1">
+            </div>
+            <div class="form-group">
+                <label>Design 1 Image URL</label>
+                <input type="url" id="design1Url" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label>Design 2 Name</label>
+                <input type="text" id="design2Name" placeholder="Design 2">
+            </div>
+            <div class="form-group">
+                <label>Design 2 Image URL</label>
+                <input type="url" id="design2Url" placeholder="https://...">
+            </div>
+            <button onclick="updateDesigns()">Update Designs</button>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="section" style="border-color: var(--color-error);">
+            <h2 style="color: var(--color-error);">Danger Zone</h2>
+            <p style="margin-bottom: 1rem; color: var(--color-text-muted);">These actions cannot be undone.</p>
+            <div class="button-group">
+                <button class="danger" onclick="resetVotes()">Reset Vote Counts</button>
+                <button class="danger" onclick="resetAll()">Reset Everything (New Vote)</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client@1.6.0/dist/index.min.js";
+
+        const HF_SPACE_URL = "https://texmexdex-vote.hf.space";
+        let gradioClient = null;
+        let votingConfig = {
+            isOpen: true,
+            startTime: null,
+            endTime: null
+        };
+
+        async function initClient() {
+            if (!gradioClient) {
+                gradioClient = await Client.connect(HF_SPACE_URL);
+            }
+            return gradioClient;
+        }
+
+        function showMessage(message, type = 'success') {
+            const messagesDiv = document.getElementById('messages');
+            const messageEl = document.createElement('div');
+            messageEl.className = `message ${type}`;
+            messageEl.textContent = message;
+            messagesDiv.appendChild(messageEl);
+            
+            setTimeout(() => {
+                messageEl.remove();
+            }, 5000);
+        }
+
+        async function refreshResults() {
+            try {
+                const client = await initClient();
+                const result = await client.predict("/get_results");
+                const data = Array.isArray(result.data) ? result.data[0] : result.data;
+                
+                updateDashboard(data);
+                showMessage('Results refreshed successfully');
+            } catch (error) {
+                showMessage(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        function updateDashboard(data) {
+            // Update stats
+            document.getElementById('totalVotes').textContent = data.total_votes || 0;
+            
+            if (data.winner && data.winner.votes > 0) {
+                document.getElementById('leaderName').textContent = data.winner.name;
+                document.getElementById('leaderVotes').textContent = `${data.winner.votes} votes`;
+            } else {
+                document.getElementById('leaderName').textContent = '-';
+                document.getElementById('leaderVotes').textContent = 'No votes yet';
+            }
+            
+            // Update results table
+            const tbody = document.getElementById('resultsTable');
+            tbody.innerHTML = data.designs.map((design, index) => {
+                const percentage = data.total_votes > 0 ? ((design.votes / data.total_votes) * 100).toFixed(1) : 0;
+                const isWinner = index === 0 && design.votes > 0;
+                
+                return `
+                    <tr>
+                        <td>#${index + 1} ${isWinner ? '<span class="winner-badge">Winner</span>' : ''}</td>
+                        <td>${design.name}</td>
+                        <td>${design.votes}</td>
+                        <td>${percentage}%</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Update design preview
+            const preview = document.getElementById('designPreview');
+            preview.innerHTML = data.designs.map(design => `
+                <div class="design-preview-item">
+                    <img src="${design.image_url}" alt="${design.name}">
+                    <h4>${design.name}</h4>
+                    <p>${design.votes} votes</p>
+                </div>
+            `).join('');
+        }
+
+        function updateTimer() {
+            if (!votingConfig.endTime) {
+                document.getElementById('timeRemaining').textContent = 'No limit';
+                return;
+            }
+            
+            const now = new Date();
+            const end = new Date(votingConfig.endTime);
+            const diff = end - now;
+            
+            if (diff <= 0) {
+                document.getElementById('timeRemaining').textContent = 'Closed';
+                votingConfig.isOpen = false;
+                updateVotingStatus();
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            let timeStr = '';
+            if (days > 0) timeStr += `${days}d `;
+            timeStr += `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('timeRemaining').textContent = timeStr;
+        }
+
+        function updateVotingStatus() {
+            const badge = document.getElementById('votingStatus');
+            if (votingConfig.isOpen) {
+                badge.textContent = 'Voting Open';
+                badge.className = 'status-badge active';
+            } else {
+                badge.textContent = 'Voting Closed';
+                badge.className = 'status-badge closed';
+            }
+        }
+
+        window.setVotingWindow = function() {
+            const start = document.getElementById('startTime').value;
+            const end = document.getElementById('endTime').value;
+            
+            if (!start || !end) {
+                showMessage('Please set both start and end times', 'error');
+                return;
+            }
+            
+            votingConfig.startTime = start;
+            votingConfig.endTime = end;
+            votingConfig.isOpen = true;
+            
+            localStorage.setItem('votingConfig', JSON.stringify(votingConfig));
+            updateVotingStatus();
+            showMessage('Voting window set successfully');
+        }
+
+        window.closeVoting = function() {
+            if (confirm('Are you sure you want to close voting now?')) {
+                votingConfig.isOpen = false;
+                localStorage.setItem('votingConfig', JSON.stringify(votingConfig));
+                updateVotingStatus();
+                showMessage('Voting closed');
+            }
+        }
+
+        window.openVoting = function() {
+            votingConfig.isOpen = true;
+            localStorage.setItem('votingConfig', JSON.stringify(votingConfig));
+            updateVotingStatus();
+            showMessage('Voting reopened');
+        }
+
+        window.updateDesigns = async function() {
+            const design1Name = document.getElementById('design1Name').value;
+            const design1Url = document.getElementById('design1Url').value;
+            const design2Name = document.getElementById('design2Name').value;
+            const design2Url = document.getElementById('design2Url').value;
+            
+            if (!design1Name || !design1Url || !design2Name || !design2Url) {
+                showMessage('Please fill in all design fields', 'error');
+                return;
+            }
+            
+            showMessage('Note: Design updates require backend modification. Contact your developer.', 'error');
+        }
+
+        window.resetVotes = async function() {
+            if (!confirm('Are you sure you want to reset all vote counts to zero? This cannot be undone.')) {
+                return;
+            }
+            
+            showMessage('Note: Vote reset requires backend modification. Contact your developer.', 'error');
+        }
+
+        window.resetAll = async function() {
+            if (!confirm('Are you sure you want to reset EVERYTHING? This will clear all votes and settings. This cannot be undone.')) {
+                return;
+            }
+            
+            if (!confirm('FINAL WARNING: This will permanently delete all voting data. Are you absolutely sure?')) {
+                return;
+            }
+            
+            localStorage.removeItem('votingConfig');
+            votingConfig = { isOpen: true, startTime: null, endTime: null };
+            updateVotingStatus();
+            showMessage('Local settings reset. Backend data requires developer access to reset.', 'error');
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            // Load saved config
+            const saved = localStorage.getItem('votingConfig');
+            if (saved) {
+                votingConfig = JSON.parse(saved);
+                if (votingConfig.startTime) {
+                    document.getElementById('startTime').value = votingConfig.startTime;
+                }
+                if (votingConfig.endTime) {
+                    document.getElementById('endTime').value = votingConfig.endTime;
+                }
+            }
+            
+            updateVotingStatus();
+            refreshResults();
+            
+            // Update timer every second
+            setInterval(updateTimer, 1000);
+            updateTimer();
+            
+            // Auto-refresh results every 10 seconds
+            setInterval(refreshResults, 10000);
+        });
+
+        window.refreshResults = refreshResults;
+    </script>
+</body>
+</html>
