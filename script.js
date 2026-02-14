@@ -37,6 +37,13 @@ function renderGallery() {
     const gallery = document.getElementById("gallery");
     const currentVote = localStorage.getItem(CONFIG.STORAGE_KEY);
     
+    // Update footer stats
+    const totalVotes = designs.reduce((sum, d) => sum + d.votes, 0);
+    const footerVotes = document.getElementById('footerTotalVotes');
+    if (footerVotes) {
+        footerVotes.textContent = totalVotes;
+    }
+    
     gallery.innerHTML = designs.map((design, index) => `
         <div class="gallery-item ${currentVote === design.id ? 'current-vote' : ''}" 
              data-id="${design.id}" 
@@ -54,6 +61,15 @@ function renderGallery() {
             </button>
         </div>
     `).join('');
+}
+
+// Show vote success animation
+function showVoteSuccess() {
+    const successEl = document.getElementById('voteSuccess');
+    successEl.classList.add('show');
+    setTimeout(() => {
+        successEl.classList.remove('show');
+    }, 1000);
 }
 
 // Open image zoom modal
@@ -139,6 +155,7 @@ window.handleVote = async function(designId) {
         if (response.success) {
             localStorage.setItem(CONFIG.STORAGE_KEY, designId);
             designs = response.designs;
+            showVoteSuccess();
             renderGallery();
         } else {
             showError(response.message || "Vote failed");

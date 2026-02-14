@@ -7,14 +7,43 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Animated background grid -->
+    <div class="bg-grid"></div>
+    
+    <!-- Floating particles -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- Hero section -->
+    <div class="hero">
+        <h1 class="hero-title">
+            <span class="glitch" data-text="VOTE">VOTE</span>
+        </h1>
+        <p class="hero-subtitle">Select your favorite design</p>
+        <div class="live-indicator">
+            <span class="pulse-dot"></span>
+            <span>Live Voting</span>
+        </div>
+    </div>
+
     <main>
         <div id="gallery" class="gallery">
             <!-- Gallery items will be injected here -->
         </div>
     </main>
 
-    <footer style="text-align: center; padding: 2rem; color: #888888; font-size: 0.875rem; letter-spacing: 0.1em; text-transform: uppercase;">
-        TeXmExDeX Type Tools
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">TeXmExDeX Type Tools</div>
+            <div class="footer-stats">
+                <span id="footerTotalVotes">0</span> votes cast
+            </div>
+        </div>
     </footer>
 
     <!-- Image Zoom Modal -->
@@ -26,6 +55,12 @@
                 <span id="modalDesignName"></span> • <span id="modalVoteCount"></span> votes
             </div>
         </div>
+    </div>
+
+    <!-- Vote success animation -->
+    <div id="voteSuccess" class="vote-success">
+        <div class="success-icon">✓</div>
+        <div class="success-text">Vote Recorded!</div>
     </div>
 
     <script type="module" src="script.js"></script>
