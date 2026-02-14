@@ -727,10 +727,7 @@
             
             try {
                 const client = await initClient();
-                const result = await client.predict("/add_design", {
-                    name: name,
-                    image_url: url
-                });
+                const result = await client.predict("/add_design", [name, url]);
                 
                 const response = Array.isArray(result.data) ? result.data[0] : result.data;
                 
@@ -755,11 +752,7 @@
             
             try {
                 const client = await initClient();
-                const result = await client.predict("/update_design", {
-                    design_id: designId,
-                    name: name,
-                    image_url: url
-                });
+                const result = await client.predict("/update_design", [designId, name, url]);
                 
                 const response = Array.isArray(result.data) ? result.data[0] : result.data;
                 
@@ -781,9 +774,7 @@
             
             try {
                 const client = await initClient();
-                const result = await client.predict("/remove_design", {
-                    design_id: designId
-                });
+                const result = await client.predict("/remove_design", [designId]);
                 
                 const response = Array.isArray(result.data) ? result.data[0] : result.data;
                 

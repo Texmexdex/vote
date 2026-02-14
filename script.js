@@ -122,10 +122,7 @@ window.handleVote = async function(designId) {
     // If clicking on current vote, cancel it
     if (currentVote === designId) {
         try {
-            const result = await gradioClient.predict("/submit_vote", {
-                design_id: "",
-                previous_vote: currentVote
-            });
+            const result = await gradioClient.predict("/submit_vote", ["", currentVote]);
             
             const response = Array.isArray(result.data) ? result.data[0] : result.data;
             
@@ -145,10 +142,7 @@ window.handleVote = async function(designId) {
     
     // Otherwise, submit new vote
     try {
-        const result = await gradioClient.predict("/submit_vote", {
-            design_id: designId,
-            previous_vote: currentVote || ""
-        });
+        const result = await gradioClient.predict("/submit_vote", [designId, currentVote || ""]);
         
         const response = Array.isArray(result.data) ? result.data[0] : result.data;
         
