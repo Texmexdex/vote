@@ -138,6 +138,7 @@
         input[type="text"],
         input[type="datetime-local"],
         input[type="url"],
+        input[type="file"],
         textarea {
             width: 100%;
             padding: 1rem;
@@ -146,6 +147,29 @@
             color: var(--color-text);
             font-family: inherit;
             font-size: 1rem;
+        }
+        
+        input[type="file"] {
+            cursor: pointer;
+        }
+        
+        input[type="file"]::file-selector-button {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 2px solid var(--color-accent);
+            color: var(--color-accent);
+            font-family: inherit;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            margin-right: 1rem;
+        }
+        
+        input[type="file"]::file-selector-button:hover {
+            background: var(--color-accent);
+            color: var(--color-bg);
         }
         
         input:focus,
@@ -253,6 +277,36 @@
             background: rgba(255, 0, 85, 0.05);
         }
         
+        .upload-preview {
+            max-width: 300px;
+            border: 2px solid var(--color-border);
+            padding: 0.5rem;
+        }
+        
+        .upload-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .upload-status {
+            font-size: 0.875rem;
+            color: var(--color-text-muted);
+            margin-top: 0.5rem;
+        }
+        
+        .upload-status.uploading {
+            color: var(--color-warning);
+        }
+        
+        .upload-status.success {
+            color: var(--color-accent);
+        }
+        
+        .upload-status.error {
+            color: var(--color-error);
+        }
+        
         .design-preview {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -279,6 +333,25 @@
         }
         
         .design-preview-item p {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+        
+        .image-preview {
+            max-width: 300px;
+            border: 2px solid var(--color-border);
+            padding: 0.5rem;
+            background: var(--color-bg);
+        }
+        
+        .image-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .image-preview p {
+            margin-top: 0.5rem;
             font-size: 0.75rem;
             color: var(--color-text-muted);
         }
@@ -381,24 +454,50 @@
             <h2>Manage Designs</h2>
             <div class="design-preview" id="designPreview"></div>
             
-            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--color-accent);">Update Designs</h3>
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--color-accent);">Update Design 1</h3>
             <div class="form-group">
                 <label>Design 1 Name</label>
                 <input type="text" id="design1Name" placeholder="Design 1">
             </div>
             <div class="form-group">
-                <label>Design 1 Image URL</label>
-                <input type="url" id="design1Url" placeholder="https://...">
+                <label>Design 1 Image</label>
+                <div style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
+                    <input type="url" id="design1Url" placeholder="https://..." style="flex: 1; min-width: 200px;">
+                    <input type="file" id="design1File" accept="image/*" style="display: none;">
+                    <button onclick="document.getElementById('design1File').click()" type="button">Upload Image</button>
+                </div>
+                <div id="design1Preview" style="margin-top: 1rem;"></div>
             </div>
+            
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--color-accent);">Update Design 2</h3>
             <div class="form-group">
                 <label>Design 2 Name</label>
                 <input type="text" id="design2Name" placeholder="Design 2">
             </div>
             <div class="form-group">
-                <label>Design 2 Image URL</label>
-                <input type="url" id="design2Url" placeholder="https://...">
+                <label>Design 2 Image</label>
+                <div style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
+                    <input type="url" id="design2Url" placeholder="https://..." style="flex: 1; min-width: 200px;">
+                    <input type="file" id="design2File" accept="image/*" style="display: none;">
+                    <button onclick="document.getElementById('design2File').click()" type="button">Upload Image</button>
+                </div>
+                <div id="design2Preview" style="margin-top: 1rem;"></div>
             </div>
-            <button onclick="updateDesigns()">Update Designs</button>
+            
+            <div class="button-group">
+                <button onclick="updateDesigns()">Update Designs</button>
+            </div>
+            
+            <div style="margin-top: 2rem; padding: 1rem; border: 2px solid var(--color-border); background: rgba(0, 255, 136, 0.05);">
+                <h4 style="color: var(--color-accent); margin-bottom: 0.5rem;">📝 How to Update Images:</h4>
+                <ol style="margin-left: 1.5rem; color: var(--color-text-muted); font-size: 0.875rem;">
+                    <li>Click "Choose File" and select your image</li>
+                    <li>Preview will appear below</li>
+                    <li>Click "Update Designs" to save</li>
+                    <li>Images will be saved as 1s.png and 2s.png</li>
+                    <li>Commit and push to GitHub to make them live</li>
+                </ol>
+            </div>
         </div>
 
         <!-- Danger Zone -->
@@ -416,6 +515,7 @@
         import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client@1.6.0/dist/index.min.js";
 
         const HF_SPACE_URL = "https://texmexdex-vote.hf.space";
+        const IMGUR_CLIENT_ID = "546c25a59c58ad7"; // Public Imgur client ID for anonymous uploads
         let gradioClient = null;
         let votingConfig = {
             isOpen: true,
@@ -429,6 +529,93 @@
             }
             return gradioClient;
         }
+
+        // Image upload to Imgur
+        async function uploadToImgur(file, previewId, urlInputId) {
+            const previewDiv = document.getElementById(previewId);
+            previewDiv.innerHTML = '<div class="upload-status uploading">Uploading image...</div>';
+            
+            try {
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                const response = await fetch('https://api.imgur.com/3/image', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Client-ID ${IMGUR_CLIENT_ID}`
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const imageUrl = data.data.link;
+                    document.getElementById(urlInputId).value = imageUrl;
+                    
+                    previewDiv.innerHTML = `
+                        <div class="upload-preview">
+                            <img src="${imageUrl}" alt="Uploaded image">
+                        </div>
+                        <div class="upload-status success">✓ Upload successful!</div>
+                    `;
+                    
+                    showMessage('Image uploaded successfully!');
+                } else {
+                    throw new Error(data.data.error || 'Upload failed');
+                }
+            } catch (error) {
+                previewDiv.innerHTML = `<div class="upload-status error">✗ Upload failed: ${error.message}</div>`;
+                showMessage(`Upload failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Setup file input handlers
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('design1File').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                        showMessage('Image must be less than 10MB', 'error');
+                        return;
+                    }
+                    uploadToImgur(file, 'design1Preview', 'design1Url');
+                }
+            });
+            
+            document.getElementById('design2File').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                        showMessage('Image must be less than 10MB', 'error');
+                        return;
+                    }
+                    uploadToImgur(file, 'design2Preview', 'design2Url');
+                }
+            });
+            
+            // Load saved config
+            const saved = localStorage.getItem('votingConfig');
+            if (saved) {
+                votingConfig = JSON.parse(saved);
+                if (votingConfig.startTime) {
+                    document.getElementById('startTime').value = votingConfig.startTime;
+                }
+                if (votingConfig.endTime) {
+                    document.getElementById('endTime').value = votingConfig.endTime;
+                }
+            }
+            
+            updateVotingStatus();
+            refreshResults();
+            
+            // Update timer every second
+            setInterval(updateTimer, 1000);
+            updateTimer();
+            
+            // Auto-refresh results every 10 seconds
+            setInterval(refreshResults, 10000);
+        });
 
         function showMessage(message, type = 'success') {
             const messagesDiv = document.getElementById('messages');
@@ -604,31 +791,6 @@
             updateVotingStatus();
             showMessage('Local settings reset. Backend data requires developer access to reset.', 'error');
         }
-
-        // Initialize
-        window.addEventListener('DOMContentLoaded', () => {
-            // Load saved config
-            const saved = localStorage.getItem('votingConfig');
-            if (saved) {
-                votingConfig = JSON.parse(saved);
-                if (votingConfig.startTime) {
-                    document.getElementById('startTime').value = votingConfig.startTime;
-                }
-                if (votingConfig.endTime) {
-                    document.getElementById('endTime').value = votingConfig.endTime;
-                }
-            }
-            
-            updateVotingStatus();
-            refreshResults();
-            
-            // Update timer every second
-            setInterval(updateTimer, 1000);
-            updateTimer();
-            
-            // Auto-refresh results every 10 seconds
-            setInterval(refreshResults, 10000);
-        });
 
         window.refreshResults = refreshResults;
     </script>
