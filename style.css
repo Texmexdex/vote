@@ -41,11 +41,11 @@ body::before {
 }
 
 main {
-    min-height: 100vh;
+    min-height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4rem 2rem;
+    padding: 2rem;
     position: relative;
     z-index: 2;
 }
@@ -53,9 +53,10 @@ main {
 .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 500px), 1fr));
-    gap: 4rem;
+    gap: 2rem;
     max-width: 1300px;
     width: 100%;
+    animation: fadeIn 1s var(--ease-out-expo) 0.3s both;
 }
 
 /* Asymmetric card design */
@@ -721,7 +722,7 @@ main {
 footer {
     position: relative;
     z-index: 3;
-    padding: 3rem 2rem;
+    padding: 1.5rem 2rem;
     border-top: 2px solid var(--color-border);
     background: var(--color-surface);
 }
@@ -737,7 +738,7 @@ footer {
 }
 
 .footer-brand {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -754,5 +755,5 @@ footer {
 .footer-stats span {
     color: var(--color-accent);
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
 }
