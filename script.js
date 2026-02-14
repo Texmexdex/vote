@@ -10,24 +10,13 @@ let designs = [];
 
 // Initialize the application
 async function init() {
-    updateStatus("Connecting to backend...", "connecting");
-    
     try {
         gradioClient = await Client.connect(CONFIG.HF_SPACE_URL);
-        updateStatus("Connected to backend", "connected");
         await loadDesigns();
     } catch (error) {
-        updateStatus("Backend connection failed", "error");
         showError(`Failed to connect to backend: ${error.message}`);
         throw error;
     }
-}
-
-// Update connection status indicator
-function updateStatus(message, state) {
-    const statusEl = document.getElementById("status");
-    statusEl.textContent = message;
-    statusEl.className = `status ${state}`;
 }
 
 // Load designs and vote counts from backend
